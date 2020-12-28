@@ -1,0 +1,15 @@
+<h2 mat-dialog-title [innerHTML]="data.title"></h2>
+<!-- <mat-dialog-content [innerHTML]="data.message"></mat-dialog-content> -->
+<mat-dialog-actions class="flexbox-parent">
+  <div class="row justify-content-center">
+  	  <mat-form-field appearance="outline">
+    <mat-label>URL</mat-label>
+    <input matInput placeholder="Placeholder" value="{{data.link}}">
+    
+  </mat-form-field>
+    <div class="col">
+      <button mat-button mat-raised-button color="primary" *ngIf="data.showOKBtn" (click)="close()">OK</button>
+      <button mat-button mat-raised-button mat-dialog-close *ngIf="data.showCancelBtn">Cancel</button>
+    </div>
+  </div>
+</mat-dialog-actions>

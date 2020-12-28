@@ -1,0 +1,39 @@
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+.progress-bar-container {
+  position: fixed!important;
+  width: 400px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  .label {
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .section {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+    .mat-progress-bar {
+      height: 30px;
+    }
+    .value {
+      position: absolute;
+      padding: 10px;
+      color: white;
+    }
+  }
+}

@@ -1,0 +1,178 @@
+<div *ngIf="loading" class="loading">
+  <div class="loaderContent">
+  <img alt="loading" src="/assets/img/icon-192x192.png" />
+  <img alt="loading" class="newloadering" src="/assets/img/loading.gif" />
+</div>
+</div>
+<app-header></app-header>
+<div id="container" style="height:100%;"></div>
+<div class="fileEditor" [class.proper]="evalution == false && !thememode">
+  <ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
+
+<div id="demo"></div>
+  <div class="ribbon-menu">
+    <ul>
+      <li>
+        <span [ngClass]="{'selected-span': this.homeSelected}" (click)="home()">HOME</span>
+      </li>
+      <li>
+        <span [ngClass]="{'selected-span': this.extraSelected}" (click)="extra()">EXTRA</span>
+      </li>
+      <li>
+        <span (click)="openModal()" *ngIf='gapiSession.isSignedIn'>OPEN BOOKS</span>
+      </li>
+<!--       <li>
+        <span [ngClass]="{'selected-span': this.listenSelected}" (click)="listen()">LISTEN</span>
+      </li> -->
+    </ul>
+  </div>
+  <div class="tools">
+    <ul [class.dayMode]="thememode">
+      <li *ngIf="homeSelected">
+        <span id="saveFile" (click)="save()" matTooltip="Save file">
+          <img src="../../../assets/gif/icons8-save_danbean.gif" id="save_img" />
+          <mat-icon svgIcon="save" id="save_svg"></mat-icon>
+        </span>
+      </li>
+<!--       <li *ngIf="homeSelected">
+        <span id="openFile" matTooltip="Open file">
+          <mat-icon svgIcon="open-file"></mat-icon>
+        </span>
+      </li> -->
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" (click)="undo()" matTooltip="Undo">
+          <img src="../../../assets/gif/icon_G_V04_looponce.gif" id="undo_img" />
+          <mat-icon svgIcon="undo" id="undo_svg"></mat-icon>
+        </span>
+      </li>
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" matTooltip="Redo" (click)="redo()">
+          <img src="../../../assets/gif/icon_redo_noloop.gif" id="redo_img" />
+          <mat-icon svgIcon="redo" id="redo_svg"></mat-icon>
+        </span>
+      </li>
+      <li *ngIf="homeSelected">
+        <span matTooltip="Word wrap"
+              [class.active]="wrapdata"
+              href="javascript:void(0)"
+              (click)="wrapData()"
+        >
+        <img src="../../../assets/gif/icons8-word-wrap_danbean.gif" id="wrap_img" />
+          <mat-icon svgIcon="wrap" id="wrap_svg" ></mat-icon>
+        </span>
+      </li>
+<!--       <li *ngIf="homeSelected">
+        <span matTooltip="Readonly"
+              [class.active]="readonly"
+              href="javascript:void(0)"
+              (click)="readOnly()"
+        >
+          <mat-icon svgIcon="readonly" ></mat-icon>
+        </span>
+      </li> -->
+<!--       <li *ngIf="homeSelected">
+        <span id="link"  matTooltip="Link">
+          <mat-icon svgIcon="link"></mat-icon>
+        </span>
+      </li> -->
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" matTooltip="Search" (click)="find()">
+          <img src="../../../assets/gif/icons8-search-5_danbean.gif" id="search_img" />
+          <mat-icon svgIcon="search" id="search_svg"></mat-icon>
+        </span>
+      </li>
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" (click)="sizeUp()" matTooltip="Text Size Up">
+          <img src="../../../assets/gif/icons8-increase-font_danbean.gif" id="increase_img" />
+          <mat-icon svgIcon="increase" id="increase_svg"></mat-icon>
+        </span>
+      </li>
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" matTooltip="Text Size Down" (click)="sizeDown()">
+          <img src="../../../assets/gif/icons8-decrease-font_danbean.gif" id="decrease_img" />
+          <mat-icon svgIcon="decrease" id="decrease_svg"></mat-icon>
+        </span>
+      </li>
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" matTooltip="Link Share" (click)="openDialog()">
+          <mat-icon svgIcon="link" ></mat-icon>
+        </span>
+      </li>
+      <li *ngIf="homeSelected">
+        <span href="javascript:void(0)" [matTooltip]="epubMode ? 'Txt' : 'Epub'" (click)="switchMode()">
+          <img src="../../../assets/gif/icons8-spell-check_danbean.gif" id="epub_img" />
+          <mat-icon *ngIf="epubMode" svgIcon="txt"></mat-icon>
+          <mat-icon *ngIf="!epubMode" svgIcon="epub" id="epub_svg"></mat-icon>
+        </span>
+      </li>
+<!--       <li *ngIf="evalution == false">
+        <span matTooltip="Minisidebar"
+          [class.active]="minisidebar"
+          href="javascript:void(0)"
+          (click)="removeMinibar()"
+        >
+          <mat-icon svgIcon="close" ></mat-icon>
+        </span>
+      </li> -->
+<!--       <li *ngIf="evalution == false">
+        <span matTooltip="Editor info"
+          [class.active]="infoBar"
+          href="javascript:void(0)"
+          (click)="statusInfo()"
+        >
+          <mat-icon svgIcon="info" ></mat-icon>
+        </span>
+      </li> -->
+      <!-- [class.active]="thememode" -->
+      <!-- <li *ngIf="evalution == false"> -->
+      <li *ngIf="extraSelected">
+        <span [ngClass]="{'active': thememode}" href="javascript:void(0)" (click)="changeThemeMode()" matTooltip="Theme mode">
+          <mat-icon *ngIf="!thememode" svgIcon="nightmode" ></mat-icon>
+          <mat-icon *ngIf="thememode" svgIcon="daymode"></mat-icon>
+        </span>
+        <span href="javascript:void(0)" (click)="changeBookmark()" matTooltip="Place bookmark">
+          <mat-icon svgIcon="bookmark" ></mat-icon>
+        </span>
+      </li>
+
+      <li *ngIf="evalution">
+        <span class="eva">Free Version</span>
+      </li>
+    </ul>
+    <mat-progress-bar *ngIf="loading2" class="editorLoader" mode="indeterminate" value="40"></mat-progress-bar>
+  </div>
+  <div class="infoBar" *ngIf="infoBar">
+    <p>
+      Len: {{ totalChar }}, lines: {{ totalLine }}, Wor: {{ wordCount }} | lin:
+      {{ infoData.lineNumber }}, col: {{ infoData.column }}, Tab:
+      {{ tabCount }}
+      <span *ngIf="selection">, sel: {{ selection }}|{{ selectedLine }}</span>
+    </p>
+  </div>
+  <!-- 93 -->
+  <div style="height: calc( 100vh - 93px );" [ngClass]="{'a-overflow' : this.isMobile}">
+    <a mat-mini-fab class="addBtn" (click)="openNewEditor()">
+      <img alt="New editor" src="/assets/img/add.png" id="add_true" />
+      <!-- <img alt="New editor" src="../../../assets/gif/icons8-plus_danbean.gif" id="add_false" /> -->
+    </a>
+    <ng-container *ngIf="epubMode">
+      <epub-viewer [padding]="'50px 150px'"
+                   (onDocumentReady)="onEpubReady()" (onDocumentClose)="onEpubClose($event)" #epubViewer>
+      </epub-viewer>
+    </ng-container>
+    <ng-container *ngIf="!epubMode">
+      <ngx-monaco-editor
+        id="notePad"
+        (onInit)="onInitEditor($event)"
+        (mouseover)="onMouseHover($event)"
+        (ngModelChange)="onKeydown($event)"
+        style="height: 100%;"
+        [options]="editorOptions"
+        [(ngModel)]="data"
+      ></ngx-monaco-editor>
+    </ng-container>
+  </div>
+  <span [style.color]="color" [ngClass]="usersaveTime" id="fileSaveTime" *ngIf="fileSaveTime">{{
+    fileSaveTime
+  }}</span>
+</div>

@@ -1,0 +1,553 @@
+
+
+
+<div class="main-modal-content">
+<button class="close" mat-button mat-dialog-close>x</button>
+<h1 class="m-main-heading">{{title}}</h1>
+<mat-tab-group (selectedTabChange)="tabChanged($event)">
+
+  <!--*********************************************************************
+  ******************************Project Gutenberg *************************
+  *************************************************************************-->
+  <mat-tab style="  position: absolute;">
+    <!-- Tab title -->
+    <ng-template mat-tab-label>
+      <div class="m-tab-title">Project Gutenberg</div>
+      <div style="background-color: cadetblue;"></div>
+    </ng-template>
+
+    <ng-container *ngIf="currentScreen == SCREENS.LISTING">
+        <!-- Tab title -->
+        <div class="search-bar">
+          <div class="search-box">
+            <input type="search" class="m-search-input form-control" [(ngModel)]="filters.search_key" placeholder="Search" (search)="search($event)" />
+            <span class="material-icons search"> search</span>
+            <!-- <span class="material-icons dropdown"> arrow_drop_down </span> -->
+          </div>
+          <div class="search-tools">
+            <div class="search-btn" (click)="fetchData()">
+              <button class="my-btn btn-filled">SEARCH</button>
+            </div>
+            <div class="order-tool">
+              <div class="order-btn" (click)="changeOrder()">
+                  <span class="material-icons">arrow_drop_up</span>
+                  <div class="order-btn-text">
+                    <span *ngIf='filters.order_by=="asc"'>AZ</span>
+                    <span *ngIf='filters.order_by=="desc"'>ZA</span>
+
+                  </div>
+                  <span class="material-icons">arrow_drop_down</span>
+                </div>
+            </div>
+            <!-- <div class="grid-btn" (click)="fetchData()">
+              <img src="../../../assets/img/button1.png" />
+            </div> -->
+
+
+          </div>
+
+
+        </div>
+        <div class="main-body">
+
+          <mat-dialog-content>
+            <!-- class not found mat-elevation-z8-->
+          <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource">
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element">
+                  <img class="m-book-icon" src="../../../assets/icons/book.png" />
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef class="table-heading">Title</th>
+                <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="author">
+                <th mat-header-cell *matHeaderCellDef class="table-heading">
+                  Author
+                </th>
+                <td mat-cell *matCellDef="let element">{{ element.author }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="reviews" sticky>
+                <th mat-header-cell *matHeaderCellDef class="table-heading reviews-col">
+                  <img class="m-comments-icon" src="../../../assets/img/comments.png" />
+                  Reviews
+                </th>
+                <td mat-cell *matCellDef="let element">
+                  <ng-container *ngIf="element.reviews.reviews">
+                    {{ element.reviews.reviews }} @ {{ floor(element.reviews.likes>0?(element.reviews.likes/element.reviews.reviews)*100:0) }}%
+                  </ng-container>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="view" sticky>
+                <th mat-header-cell *matHeaderCellDef class="m-table-title"></th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="tools-btn" (click)="goTo('top-review', element)">
+                    <img src="../../../assets/svg/show.svg" *ngIf="element.reviews.reviews">
+                    <img src="../../../assets/svg/show-disabled.svg" *ngIf="!element.reviews.reviews">
+                  </div>
+                    <div class="open-dropdown">
+                   <img src="../../../assets/svg/Vector.svg" *ngIf="element.reviews.reviews" class="dote">
+                 </div>
+                  <div class="dropdown">
+                    <div class="tools-btn" (click)="goTo('top-review', element)">
+                    <img src="../../../assets/svg/show.svg" *ngIf="element.reviews.reviews">
+                  </div>
+                  <div class="tools-btn" (click)="goTo('write-review', element)">
+                    <img src="../../../assets/svg/pen.svg">
+                  </div>
+
+                  </div>
+
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="edit" sticky>
+                <th mat-header-cell *matHeaderCellDef class="m-table-title"></th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="tools-btn" (click)="goTo('write-review', element)">
+                    <img src="../../../assets/svg/pen.svg">
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            <div class="error-message" *ngIf="dataSource?.data.length === 0">No records found</div>
+              <div style="min-height: 44vh; display: block; min-width: 100%;"  *ngIf='loading'>
+                <mat-spinner style="
+                display: block;
+                margin:0 auto;
+                position: absolute;
+                top: 50%;
+                left: 44%;
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%)"
+                mode="indeterminate"></mat-spinner>
+              </div>
+              <mat-paginator
+              itemsPerPageLabel='Rows per page'
+              [pageSizeOptions]="[10, 20, 50]"
+              [pageSize]="page.pageSize"
+              [length]="page.length"
+              (page)="pageChanged($event)">
+            </mat-paginator>
+          </div>
+          </mat-dialog-content>
+
+        </div>
+            <!-- </mat-dialog-content> -->
+      <mat-dialog-actions class="footer-box" >
+        <!-- <button class="my-btn btn-filled">LOAD</button> -->
+        <button class="my-btn btn-txt" mat-button mat-dialog-close>CANCEL</button>
+      </mat-dialog-actions>
+    </ng-container>
+    <ng-container *ngIf="currentScreen == SCREENS.BOOK_DETAILS">
+      <div class="search-bar">
+        <div class="m-book-title">
+          <h4>{{selectedBook?.title}}</h4>
+          <h5>{{selectedBook?.author}}</h5>
+        </div>
+        <div class="input-wrappers">
+          <!-- <mat-form-field appearance="fill" style="width: 100px;">
+            <mat-select disableRipple panelClass='mat-select'>
+              <mat-option value="top" selected>TOP</mat-option>
+              <mat-option value="bottom">BOTTOM</mat-option>
+            </mat-select>
+          </mat-form-field> -->
+        </div>
+      </div>
+      <div class="main-body" style="overflow:scroll;">
+      <div class= "review-container">
+       <div class="m-review-content">
+        <p class="h-book-details">Synopsis</p>
+        <p class="book-details">
+        {{global?.bookReview?.synopsis}}
+        </p>
+        <ng-container *ngIf='detailsScreen?.topReview'>
+        <h4 class="h-book-details">Top review</h4>
+        <p class="book-details">
+          {{detailsScreen?.topReview?.reviewComment | slice:0:265}}{{detailsScreen?.topReview?.reviewComment.length>265?'...':''}}
+          <br>
+         <em>Top Review by <strong> {{detailsScreen?.topReview?.reviewer_name}} </strong></em>
+        </p>
+      </ng-container>
+        <div class="m-pt-19">
+          <button class="my-btn btn-txt book-detail-btn" (click)="goTo('review-details')">SHOW</button>
+          <button class="my-btn btn-txt" [disabled]='global?.isReviewer' (click)="goTo('write-review')">WRITE</button>
+        </div>
+
+        <div class="m-pt-55">
+          <div class="tag-label">Top Tags:</div>
+          <div>
+            <mat-chip-list aria-label="Fish selection">
+              <mat-chip class="mat-chip-custom" *ngFor="let tag of global?.bookReview.top_tags">{{tag}}</mat-chip>
+            </mat-chip-list>
+          </div>
+        </div>
+        <div class="m-mt-16 m-flex ">
+          <span class="m-tag-label">Similar To:</span>
+          <span class="m-books-links">
+            <ng-container *ngFor="let book of global?.bookReview.similar_books; let i = index">
+              <ng-container *ngIf='i!=0'>
+                ,
+              </ng-container>
+              <a class="hover-onqa" href="{{book?.book_link || 'javascript:void(0)'}}" target="_blank">{{book.title}}
+                <div class="hover-toolpikar">{{book.title}}</div></a>
+            </ng-container>
+          </span>
+        </div>
+      </div>
+
+      <div class="m-review-details">
+        <div class="m-tag-label m-w-50 m-left m-pt-18">Read/Skip:</div>
+        <div class=" m-data m-w-50  m-left m-pt-18">
+          <div class="m-w-50  m-left">
+            <span class="material-icons mat-icons color-brown">
+              thumb_up
+            </span>
+            <span class="m-rating-count">{{global?.bookReview?.likes}}</span>
+          </div>
+          <div class="m-w-50 m-right">
+            <span class="material-icons m-mat-icons">
+              pan_tool
+            </span>
+            <span class="m-rating-count m-t-9">{{global?.bookReview?.dislikes}}</span>
+          </div>
+        </div>
+
+        <hr class="m-line">
+        <div class="m-tag-label m-w-50 m-left">Genre:</div>
+        <div class=" m-data m-w-50  m-left jagqa">
+          <img class="m-comments-icon" src="../../../assets/img/icon-left.PNG" />
+          {{global?.bookReview?.genre}}
+        </div>
+        <div class="m-tag-label m-w-50 m-left">Published:</div>
+        <div class=" m-data m-w-50  m-left">
+          {{global?.bookReview?.published}}
+        </div>
+        <div class="m-tag-label m-w-50 m-left">Pages:</div>
+        <div class=" m-data m-w-50  m-left">
+          {{global?.bookReview?.pages}}
+        </div>
+        <div class="m-tag-label m-w-50 m-left">Subjects:</div>
+        <div class=" m-data m-w-50  m-left">
+          {{global?.bookReview?.subjects.join('; ')}}
+        </div>
+        <div class="m-tag-label m-w-50 m-left">Key link:</div>
+        <div class=" m-data m-w-50  m-left ">
+          <a class="m-books-links hover-onqa aa" href="global?.bookReview?.optionalLink" target="_blank">
+            {{global?.bookReview?.optionalLink}}
+            <div class="hover-toolpikar pp">{{global?.bookReview?.optionalLink}}</div>
+          </a>
+        </div>
+
+      </div>
+      </div>
+      </div>
+      <mat-dialog-actions class="footer-box" >
+        <button class="my-btn btn-filled">LOAD</button>
+        <button class="my-btn btn-txt" (click)="goBack()">BACK</button>
+      </mat-dialog-actions>
+    </ng-container>
+    <ng-container *ngIf="currentScreen == SCREENS.REVIEWS_SHOW">
+      <ng-container *ngFor='let review of global?.bookReview?.reviews; let i = index'>
+
+      <div class="search-bar">
+        <div class="m-book-title">
+          <h4>{{selectedBook?.title}}</h4>
+          <h5>{{selectedBook?.author}}</h5>
+        </div>
+        <div class="input-wrappers">
+          <mat-form-field appearance="fill" style="width: 100px;">
+            <!-- <mat-label>TOP</mat-label> -->
+            <mat-select [(ngModel)]="selectedOption" panelClass='mat-select' placeholder="TOP" >
+              <mat-option value="top" selected>TOP</mat-option>
+              <mat-option value="bottom">BOTTOM</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="main-body">
+
+        <mat-dialog-content>
+          <!-- class not found mat-elevation-z8-->
+        <div class="review-container">
+
+
+            <div class="review-heading">
+            <div class="circle-logo">
+              <div class="parent">
+                <div class="center">{{review?.reviewer_name[0] | uppercase}}</div>
+              </div>
+            </div>
+
+            <div class="submited-heading">
+              <h4>{{review?.reviewer_name}}</h4>
+              <h5>Submitted {{review?.review_date |date:'dd-LLL-yy'}}</h5>
+            </div>
+
+
+
+            <div class="rating-section" *ngIf="i==0">
+            <button class="my-btn btn-tag btn-avatar">
+              <span class="material-icons m-mat-icons">
+              star_rate
+              </span> FIRST </button>
+            </div>
+          </div>
+            <div>
+              <p class="review-text">
+                {{review?.reviewComment}}
+              </p>
+            </div>
+            <div class="review-section">
+              <div class="tag-label">Tags:</div>
+              <div>
+                <button *ngIf="review?.recommendation" class="btn-tag btn-avatar"><span class="material-icons m-mat-icons">
+                 {{review?.recommendation =='READ'?'thumb_up':'thumb_down'}}
+                </span> {{review?.recommendation}} </button>
+                <button class="btn-tag btn-text-only" *ngFor="let tag of review?.tags"> {{tag}} </button>
+              </div>
+            </div>
+
+
+
+            <div class="review-section m-w60-inline-block">
+              <div class="tag-label">Read this book if you like :</div>
+              <div class="mt-28 ml-40 flex">
+                <div class="m-w60-inline-block left">
+                  <span class="m-books-links" *ngFor="let book of global?.bookReview?.similar_books">
+                    <div class="hover-onqa" (click)="openURL(book?.book_link)">{{book.title}}
+                    <div class="hover-toolpikar">{{book.title}}</div></div>
+
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-section m-w40-inline-block" style="text-align: right;">
+              <div (click)="openURL(review?.optionalLink )">
+                <mat-icon svgIcon="link" ></mat-icon>
+                <h6 class="m-books-links">Annotated Version</h6>
+              </div>
+              <div (click)="openURL('http://www.reddit.com')">
+                <mat-icon svgIcon="link" ></mat-icon>
+                <h6 class="m-books-links">Discuss On Reddit</h6>
+              </div>
+            </div>
+        </div>
+        </mat-dialog-content>
+
+      </div>
+      <mat-dialog-actions *ngIf="!review?.hideHelpful" class="footer-box mat-dialog-actions ng-star-inserted yesnoqa" style="">
+
+        <h4>I FOUND THIS REVIEW HELPFUL</h4>
+        <span class="button-box">
+          <button (click)="reviewHelpful(review, true)">YES</button>
+          <button (click)="reviewHelpful(review, false)">NO</button>
+        </span>
+      </mat-dialog-actions>
+    </ng-container>
+
+          <!-- </mat-dialog-content> -->
+
+
+
+
+
+
+
+
+
+
+      <mat-dialog-actions class="footer-box" >
+        <button class="my-btn btn-filled">LOAD</button>
+        <button class="my-btn btn-txt" (click)="goBack()">BACK</button>
+      </mat-dialog-actions>
+
+    </ng-container>
+    <ng-container *ngIf="currentScreen == SCREENS.WRITE_REVIEW">
+      <div class="search-bar">
+        <div class="m-book-title">
+          <h4>{{selectedBook?.title}}</h4>
+          <h5>{{selectedBook?.author}}</h5>
+        </div>
+        <div class="recommendation-selection">
+          <button *ngIf="reviewScreen.recommendation == 'SKIP'" class="btn-tag btn-avatar">
+            <span class="material-icons m-mat-icons">
+              pan_tool
+            </span> SKIP <span class="material-icons clear" (click)="reviewScreen.setRecommendation('')"> clear </span>
+          </button>
+          <button *ngIf="reviewScreen.recommendation == 'READ'"  class="btn-tag btn-avatar">
+            <span class="material-icons m-mat-icons">
+              thumb_up
+            </span> READ <span class="material-icons clear" (click)="reviewScreen.setRecommendation('')"> clear </span>
+
+          </button>
+        </div>
+      </div>
+      <div class="main-body">
+        <mat-dialog-content>
+          <!-- class not found mat-elevation-z8-->
+          <div class="recommendation" *ngIf="!reviewScreen.recommendation">
+            <div class="recommendation-label">YOUR RECOMENDATION</div>
+            <div class="recommendation-actions">
+              <button class="my-btn btn-txt" (click)="reviewScreen.setRecommendation('READ')">READ</button>
+              <button class="my-btn btn-txt" (click)="reviewScreen.setRecommendation('SKIP')">SKIP</button>
+            </div>
+
+          </div>
+        <div class="review-container" [formGroup]="reviewScreen.form">
+
+          <fieldset class="review-input-field recommendation-spacing" [ngStyle]="{'border': (reviewScreen.reviewCommentFocused) ? '1px solid #F79624' : '1px solid rgba(25, 25, 25, 0.32)', 'margin-top': reviewScreen.setTopMargin() ,'padding-top': (reviewScreen.reviewCommentFocused|| reviewScreen.form.controls.reviewComment.value.length) ? '1px' : '12px'}">
+            <legend *ngIf="reviewScreen.checkIf('reviewComment')" [ngStyle]="{'color': (reviewScreen.reviewCommentFocused) ? '#F79624' : 'rgba(25, 25, 25, 0.32)'}">Review</legend>
+            <textarea (focus)="reviewScreen.focus('reviewComment', true)" formControlName="reviewComment" (focusout)="reviewScreen.focus('reviewComment', false)"     rows="7" placeholder="Please write your review here. Minimum words is 100, maximum words is 500. Reviews are moderated"></textarea>
+          </fieldset>
+          <div style="color:firebrick; float: left;">
+            {{reviewScreen?.wordCountErrorMessage}}
+          </div>
+          <div class="word-count">{{reviewScreen?.wordCount}}</div>
+          <!-- Tags Start-->
+          <fieldset class="review-input-field field_tags" [ngStyle]="{'border': (reviewScreen.tagsFocused) ? '1px solid #F79624' : '1px solid rgba(25, 25, 25, 0.32)', 'height': (reviewScreen.tagsFocused) ? '62px' : '48px'}">
+            <legend *ngIf="reviewScreen.tagsFocused">Search and Add Tags </legend>
+          <mat-form-field class="tag-chip-list">
+            <mat-chip-list #chipList aria-label="Tags">
+
+              <input class="tags-input-custom"
+                placeholder=" {{(reviewScreen.tagsFocused)?'': reviewScreen.tagPlaceholder}} "
+                (focus)="reviewScreen.focus('tags', true)"
+                (focusout)="reviewScreen.focus('tags', false)"
+                #tagsInput
+                formControlName="tags"
+                [matAutocomplete]="auto"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="reviewScreen.add($event, 'tags')">
+            </mat-chip-list>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="reviewScreen.selected($event, 'tags')">
+              <mat-option *ngFor="let tag of reviewScreen.getFilteredTags()" [value]="tag">
+                {{tag.tags_desc}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          </fieldset>
+          <div class="selected-chips" *ngIf="reviewScreen.tags">
+
+            <mat-chip class="mat-chip-custom"
+            *ngFor="let tag of reviewScreen.tags"
+            [selectable]="false"
+            [removable]="reviewScreen.removable"
+            (removed)="reviewScreen.remove(tag, 'tags')">
+            {{tag.tags_desc}}
+            <mat-icon matChipRemove *ngIf="reviewScreen.removable">cancel</mat-icon>
+          </mat-chip>
+          </div>
+          <!-- Tags End-->
+          <!-- Similar Books Start-->
+          <fieldset class="review-input-field field_tags" [ngStyle]="{'border': (reviewScreen.similarBooksFocused) ? '1px solid #F79624' : '1px solid rgba(25, 25, 25, 0.32)', 'height': (reviewScreen.similarBooksFocused) ? '62px' : '48px'}">
+            <legend *ngIf="reviewScreen.similarBooksFocused">Search and Add Similar Books</legend>
+          <mat-form-field class="tag-chip-list">
+            <mat-chip-list #chipListSimilarBook aria-label="Similar Book">
+
+              <input class="tags-input-custom"
+                (focus)="reviewScreen.focus('similarBook', true)"
+                (focusout)="reviewScreen.focus('similarBook', false)"
+                placeholder=" {{(reviewScreen.similarBooksFocused)?'': reviewScreen.similarBookPlaceholder}} "
+                #similarBookInput
+                formControlName="similarBooks"
+                [matAutocomplete]="similarBookAuto"
+                [matChipInputFor]="chipListSimilarBook"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="reviewScreen.add($event, 'similarBooks')">
+            </mat-chip-list>
+            <mat-autocomplete #similarBookAuto="matAutocomplete" (optionSelected)="reviewScreen.selected($event, 'similarBooks')">
+              <mat-option *ngIf="reviewScreen.isLoading" class="is-loading" [value]="null">Loading...</mat-option>
+              <ng-container *ngIf="!reviewScreen.isLoading" >
+                <mat-option *ngFor="let similarBook of reviewScreen.filteredBooks" [value]="similarBook">
+                  {{similarBook.title}}
+                </mat-option>
+              </ng-container>
+            </mat-autocomplete>
+          </mat-form-field>
+          </fieldset>
+          <div class="selected-chips" *ngIf="reviewScreen.similarBooks">
+
+            <mat-chip class="mat-chip-custom"
+            *ngFor="let similarBook of reviewScreen.similarBooks"
+            [selectable]="false"
+            [removable]="reviewScreen.removable"
+            (removed)="reviewScreen.remove(similarBook, 'similarBooks')">
+            <div style="
+            /* width: 194px;     */
+            max-width: 194px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        ">{{similarBook.title}}</div>
+            <mat-icon matChipRemove *ngIf="reviewScreen.removable">cancel</mat-icon>
+          </mat-chip>
+          </div>
+          <!-- Similar Books End-->
+
+          <!-- Similar Books Start-->
+          <fieldset class="review-input-field field_tags last-input" [ngStyle]="{'border': (reviewScreen?.optionalLinksFocused) ? '1px solid #F79624' : '1px solid rgba(25, 25, 25, 0.32)', 'height': (reviewScreen.optionalLinksFocused) ? '62px' : '48px', 'padding-top': (reviewScreen.optionalLinksFocused|| reviewScreen.form.controls.optionalLink.value.length) ? '1px' : '12px', 'margin-top': (reviewScreen.optionalLinksFocused|| reviewScreen.form.controls.optionalLink.value.length) ? '1px' : '12px'}">
+            <legend *ngIf="reviewScreen.optionalLinksFocused || reviewScreen.form.controls.optionalLink.value.length">(Optional) Link an Annotated Version</legend>
+            <input class="input-custom"
+            (focus)="reviewScreen.focus('optionalLink', true)"
+            (focusout)="reviewScreen.focus('optionalLink', false)"
+            placeholder=" {{(reviewScreen.optionalLinksFocused)?'': '(Optional) Link an Annotated Version'}} "
+            formControlName="optionalLink">
+            <img class="m-comments-icon" src="../../../assets/img/goti.PNG" />
+          </fieldset>
+          <!-- Similar Books End-->
+
+        </div>
+        </mat-dialog-content>
+
+      </div>
+          <!-- </mat-dialog-content> -->
+      <mat-dialog-actions class="footer-box" >
+        <!-- <button class="my-btn btn-filled">LOAD</button> -->
+
+        <button class="my-btn btn-filled" [disabled]="!reviewScreen.form.valid || !this.reviewScreen.recommendation"  (click)="reviewScreen.post()">POST</button>
+        <button class="my-btn btn-txt" (click)="goBack()">BACK</button>
+      </mat-dialog-actions>
+
+    </ng-container>
+
+  </mat-tab>
+
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+    <div class="tab-title">About</div>
+    </ng-template>
+    <form class="m-form">
+    <div class="m-header-container">
+    <h1 class="book-title heading-1">About Gutenberg on QuickPad</h1>
+    </div>
+    <div>
+    <p class="paragraph">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque tincidunt pulvinar felis. Vestibulum iaculis, neque sit amet interdum suscipit, ex ligula mattis risus, sit amet varius nisl urna sit amet dui. Praesent euismod porta massa vitae mollis. Morbi molestie nisl id velit facilisis facilisis. Sed bibendum at tellus sed faucibus. Etiam a ornare mi. In hac habitasse platea dictumst. Curabitur eget dignissim diam. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse convallis fermentum felis et luctus. Morbi dapibus ligula ac nisi interdum, non laoreet nunc ultricies. Donec fringilla congue mollis. Nulla facilisi. Donec a vehicula dui. Curabitur libero ante, euismod in efficitur vitae, ornare eu ligula. Nunc sem enim, placerat ut arcu in, fringilla faucibus ante.
+    <br>
+    <br>
+    <br>
+    Nunc accumsan porta quam, ut ornare nibh hendrerit sit amet. Nullam vitae venenatis purus. Nullam vel mi sit amet diam consectetur efficitur. Morbi molestie mi tempus, aliquet leo a, accumsan felis. Suspendisse potenti. Phasellus placerat lorem eget lectus ultricies, sed venenatis nibh venenatis. In hac habitasse platea dictumst. Nunc dapibus lectus id lacus facilisis, eget pharetra ligula tincidunt. Fusce et lobortis massa, non pulvinar urna.
+    </p>
+    </div>
+    </form>
+    </mat-tab>
+
+
+</mat-tab-group>
+
+</div>

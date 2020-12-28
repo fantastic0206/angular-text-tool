@@ -1,0 +1,151 @@
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
+<div class="authPopup" *ngIf="authorise">
+  <div class="contentBtn">
+    <div class="title">
+      <img alt="img" src="/assets/img/driveIcon.png"/>
+      <span>Authorise this App</span>
+    </div>
+    <div class="content">
+      <span>QuickPad integrates with Google Drive</span>
+      <span>which makes it easy to save and work on</span>
+      <span>your text files.</span>
+      <span>If you'd like to use it, you will need to</span>
+      <span>authorize it through your Google login. It's</span>
+      <span>as easy as clicking the button below.</span>
+    </div>
+    <div class="buttons">
+      <button type="button" (click)="closeModel()">NOPE</button>
+      <button type="button" (click)="login()">ACCEPT</button>
+    </div>
+  </div>
+</div>
+<mat-toolbar>
+  <img
+    (click)="homePage()"
+    alt="logo"
+    height="40"
+    src="./assets/img/logo.png"
+  />
+  <div class="appTitle">
+    <p class="appName" (click)="homePage()">QuickPad.io</p>
+    <div *ngIf="isLoggedIn && pagehome != true" class="title">
+      <br />
+      <!-- <img alt="loading" *ngIf="loaderNew" class="newloader" src="/assets/img/loading.gif" /> -->
+      <span id="hide"></span>
+      <input id="txt" (ngModelChange)="changeWidthTitle($event)" [class.withSpace]="inputClass" class="titleInput" *ngIf="modelFIleName"
+        type="text" [(ngModel)]="title1" #menu/>
+      <span
+        id = "drivefileTitleId"
+        class="drivefileTitle"
+        #filetitle
+        *ngIf="!modelFIleName"
+        (click)="changeFile($event)"
+        >{{ title }}</span
+      >
+      <input
+        class="titleExt"
+        *ngIf="modelFIleExt"
+        type="text"
+        [(ngModel)]="fileType1"
+        (ngModelChange)="changeWidthEtx($event)"
+        #ext
+      />
+      <span
+        class="ext"
+        #fileExt
+        *ngIf="!modelFIleExt"
+        (click)="changeFileExt()"
+      >
+        {{ fileType }}
+      </span>
+    </div>
+
+    <div class="itemsList" *ngIf="listfiles != null && pagehome != true">
+      <span id="folderList" (click)="showMenuList()"
+        ><span class="in">in</span> <mat-icon svgIcon="folder1"></mat-icon>
+        {{ projectTitle.name }}</span
+      >
+      <ul *ngIf="menuToggele" class="dropdownMenu">
+        <mat-progress-bar *ngIf="loaderFile" class="newloaders" mode="indeterminate" value="40"></mat-progress-bar>
+        <h3>
+          <i
+            *ngIf="projectTitle.name != 'My Drive'"
+            (click)="backToParent(projectTitle.parents[0])"
+            class="arrow-left"
+            aria-hidden="true"
+          >
+            <img
+              *ngIf="!themeMode && evalution"
+              alt="arrow-left"
+              src="/assets/img/left-arrow1.png"
+            />
+            <img
+              *ngIf="!themeMode && !evalution"
+              alt="arrow-left"
+              src="/assets/img/left-arrow.png"
+            />
+            <img
+              *ngIf="!evalution && themeMode"
+              alt="arrow-left"
+              src="/assets/img/left-arrow1.png"
+            /> </i
+          >{{ projectTitle.name }}
+          <span (click)="hideMenu()">&times;</span>
+        </h3>
+        <li *ngFor="let item of listfiles">
+          <div
+            *ngIf="item.MimeType == 'application/vnd.google-apps.folder'"
+            class=""
+          >
+            <a href="javascript:void(0)" (click)="backToParent(item.Id)">
+              <mat-icon svgIcon="folder1"></mat-icon> {{ item.Name }}</a
+            >
+          </div>
+          <div
+            *ngIf="item.MimeType != 'application/vnd.google-apps.folder'"
+            class=""
+          >
+            <i class="fa fa-file-code-o"></i>
+            {{ item.Name }}
+          </div>
+        </li>
+        <h4 class="moveFolder">
+          <mat-icon svgIcon="folder" (click)="moveFile(projectTitle.id)"></mat-icon>
+          <span (click)="moveFile(projectTitle.id)">MOVE HERE</span>
+        </h4>
+      </ul>
+    </div>
+  </div>
+
+  <!-- This fills the remaining space of the current row -->
+  <span class="fill-remaining-space"></span>
+  <ng-container *ngIf="!isLoggedIn">
+    <button id="userlogin" class="login" mat-button (click)="login()">
+      Login
+    </button>
+  </ng-container>
+  <ng-container *ngIf="isLoggedIn">
+    <button class="driveLink" (click)="drivefileUrl()">
+      <img alt="Drive icon" src="./assets/img/driveIcon.png" />
+    </button>
+    <div class="test"></div>
+    <button class="userName" [matMenuTriggerFor]="userMenu">
+      {{ user.getGivenName()[0] }}
+    </button>
+    <mat-menu #userMenu="matMenu" class="detailPopup">
+      <div class="border-wrap">
+        <button class="userName">
+          {{ user.getGivenName()[0] }}
+        </button>
+      </div>
+      <h5>{{ user.getGivenName() }}</h5>
+      <p>{{ user.getEmail() }}</p>
+      <button id="userlogin" mat-button (click)="switchAccount()">
+        Switch Account
+      </button>
+      <hr />
+      <button class="logoutBtn" mat-button (click)="logout()">Logout</button>
+    </mat-menu>
+  </ng-container>
+</mat-toolbar>
+<div class="bg" *ngIf="menuToggele"></div>

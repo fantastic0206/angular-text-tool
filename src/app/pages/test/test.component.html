@@ -1,0 +1,15 @@
+<app-header></app-header>
+<p>proper works!</p>
+<p>FileId</p>
+<input id="txt" (ngModelChange)="changeFildId($event)" class="titleInput"
+        type="text" [(ngModel)]="FileId"/>
+<p>UserId</p>
+<input id="txt" (ngModelChange)="changeUserId($event)" class="titleInput"
+        type="text" [(ngModel)]="UserId"/>
+<p>LineNo</p>
+<input id="txt" (ngModelChange)="changeLineNo($event)" class="titleInput"
+        type="text" [(ngModel)]="LineNo"/>
+<br/>
+<button (click) = "PostCurrentLineTable($event)">
+    postCurrentLineTable
+</button>

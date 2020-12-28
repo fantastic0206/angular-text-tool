@@ -1,0 +1,173 @@
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+mat-toolbar {
+  img{
+    cursor: pointer;
+  }
+  background: #fff;
+  color: #29272d;
+  .userName {
+    background-color: #77909b;
+    position: absolute;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    line-height: 35px;
+    cursor: pointer;
+    right: 20px;
+    top: 14px;
+  }
+  .driveLink {
+    background-color: transparent;
+    border: none;
+    margin-right: 15px;
+    img {
+      max-width: 35px;
+      position: relative;
+      top: 4px;
+      cursor: pointer;
+    }
+  }
+}
+
+mat-toolbar.proper {
+  background: #2e2a58;
+  color: #fff;
+}
+
+img.avatar {
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+}
+.proper {
+  .appTitle {
+    span {
+      color: #ccc;
+    }
+  }
+}
+.appTitle {
+  line-height: 20px;
+  p.appName{
+    font-family: OpenSans-SemiBold !important;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline;
+  }
+  .title {
+    font-size: 14px;
+    color: #404040;
+    display: inline;
+    .ext {
+      background-color: #1a73e8;
+      text-transform: uppercase;
+      color: #fff;
+      padding: 2px 5px;
+      margin-left: 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      position: relative;
+      top: -1px;
+    }
+  }
+}
+
+.withSpace {
+  padding-right: 8px;
+}
+
+#hide {
+  position: absolute;
+  height: 0;
+  overflow: hidden;
+  white-space: pre;
+}
+
+.authPopup{
+  position: fixed;
+  background:rgba(232, 232, 232, 0.7);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 999;
+  .contentBtn{
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color:#FFFFFF;
+    //border: 2px solid #000;
+    width: 285px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 40%;
+    padding: 20px;
+    .title{
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      img{
+        width:18px;
+        margin-right: 10px;
+      }
+      span{
+        font-size: 18px;
+        font-weight: bold;
+      }
+    }
+    .content{
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 40px;
+      span{
+        font-size: 14px;
+        &:nth-child(3){
+          margin-bottom: 20px;
+        }
+        &:last-child{
+
+        }
+      }
+    }
+    .buttons{
+      display: flex;
+      justify-content: flex-end;
+      button{
+        background: #ffffff;
+        border: none;
+        outline: none;
+        &:hover{
+          cursor: pointer;
+          color: #9a3264
+        }
+        &:first-child{
+          margin-right: 30px;
+        }
+        &:last-child{
+
+        }
+      }
+    }
+  }
+}
+.test {
+  margin: 25px 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-size: 100% 100%, 50% 50%, 50% 50%, 50% 50%, 50% 50%;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(white, white), linear-gradient(30deg, #ec3e2a 100%, lightgrey 30%), linear-gradient(120deg, #4280ef 100%, lightgrey 30%), linear-gradient(300deg, #f7ba37 100%, lightgrey 30%), linear-gradient(210deg, #31a253 100%, lightgrey 30%);
+  background-position: center center, left top, right top, left bottom, right bottom;
+  background-origin: content-box, border-box, border-box, border-box, border-box;
+  background-clip: content-box, border-box, border-box, border-box, border-box;
+  transform: rotate(10deg);
+}
